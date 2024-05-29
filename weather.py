@@ -5,11 +5,13 @@ import json
 import matplotlib.pyplot as plt
 import tabulate
 import os
+from io import BytesIO
+import base64
 from dotenv import load_dotenv
 from pprint import pprint
 
 
-def get_coord(zip_code):
+def get_coord(zip_code="84098"):
     nomi = pgeocode.Nominatim('us')
     query = nomi.query_postal_code(zip_code)
     if query is None or query.empty or pd.isnull(query['latitude']) or pd.isnull(query['longitude']):
@@ -73,15 +75,35 @@ def plot_temperature_trends(weather_df):
     weather_df['Date'] = pd.to_datetime(weather_df['Date'])
     plt.figure(figsize=(10, 6))
     plt.plot(daytime_temps['Date'], daytime_temps['Temp'], label='Highs (Daytime)', color='orange', marker='o')
+    for i in range(len(daytime_temps)):
+        plt.annotate(f"{daytime_temps.iloc[i]['Temp']}°F", 
+                    (daytime_temps.iloc[i]['Date'], daytime_temps.iloc[i]['Temp']), 
+                    textcoords="offset points", 
+                    xytext=(0, 10), 
+                    ha='center', 
+                    fontsize=9)
     plt.plot(nighttime_temps['Date'], nighttime_temps['Temp'], label='Lows (Nighttime)', color='blue', marker='o')
+    for i in range(len(nighttime_temps)):
+        plt.annotate(f"{nighttime_temps.iloc[i]['Temp']}°F", 
+                    (nighttime_temps.iloc[i]['Date'], nighttime_temps.iloc[i]['Temp']), 
+                    textcoords="offset points", 
+                    xytext=(0, -15), 
+                    ha='center', 
+                    fontsize=9)
     plt.title('Temperature Trends')
     plt.xlabel('Date')
     plt.ylabel('Temperature (F)')
     plt.legend()
-    plt.xticks(rotation=45)
+    plt.xticks()
     plt.grid(True)
     plt.tight_layout()
-    plt.show()
+    plt.tight_layout()
+    buf = BytesIO()
+    plt.savefig(buf, format='png')
+    buf.seek(0)
+    img_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
+    plt.close()
+    return img_base64
 
 """def show_weather_details(weather_df):
     weather_df['Day/Night'] = weather_df['Day Time'].apply(lambda x: 'Day' if x else 'Night')
@@ -107,7 +129,6 @@ def show_weather_details_table(weather_df):
 
 def main():
     try:
-        zip_code = input("Enter ZIP code ('#####'): ")
         lat, lon = get_coord(zip_code)
         forecast_url = get_baseline(lat, lon)
         
@@ -126,4 +147,6 @@ def main():
         print(f"Error: {e}")
 
 if __name__ == '__main__':
+    print('\n Get Current Weather Forecast For Your Area')
+    zip_code = input("\n Enter your Zip Code (XXXXX): ")
     main()
