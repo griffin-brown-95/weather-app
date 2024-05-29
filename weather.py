@@ -4,7 +4,10 @@ import pgeocode
 import json
 import matplotlib.pyplot as plt
 import tabulate
-import plotly.graph_objects as go
+import os
+from dotenv import load_dotenv
+from pprint import pprint
+
 
 def get_coord(zip_code):
     nomi = pgeocode.Nominatim('us')
@@ -80,7 +83,7 @@ def plot_temperature_trends(weather_df):
     plt.tight_layout()
     plt.show()
 
-def show_weather_details(weather_df):
+"""def show_weather_details(weather_df):
     weather_df['Day/Night'] = weather_df['Day Time'].apply(lambda x: 'Day' if x else 'Night')
     weather_df['Date'] = pd.to_datetime(weather_df['Date']).dt.strftime('%m/%d/%Y')
 
@@ -93,14 +96,14 @@ def show_weather_details(weather_df):
                 align='left'))
     ])
     fig.update_layout(title='Weather Forecast', title_x=0.5)
-    fig.show()
+    fig.show()"""
 
 def show_weather_details_table(weather_df):
     weather_df['Day/Night'] = weather_df['Day Time'].apply(lambda x: 'Day' if x else 'Night')
     weather_df['Date'] = pd.to_datetime(weather_df['Date']).dt.strftime('%m/%d/%Y')
 
     display_df = weather_df[['Date', 'Day/Night', 'Short Forecast', 'Detailed Forecast']]
-    print(tabulate(display_df, headers='keys', tablefmt='psql'))
+    pprint(display_df)
 
 def main():
     try:
@@ -113,7 +116,8 @@ def main():
             
             if not weather_df.empty:
                 plot_temperature_trends(weather_df)
-                show_weather_details(weather_df)
+                #show_weather_details(weather_df)
+                show_weather_details_table(weather_df)
             else:
                 print("No forecast data available.")
         else:
