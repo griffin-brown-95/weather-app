@@ -1,5 +1,6 @@
 from flask import Flask, render_template, request
 from weather import get_coord, get_baseline, get_forecast, plot_temperature_trends, show_weather_details_table
+from waitress import serve
 
 app = Flask(__name__)
 
@@ -37,4 +38,4 @@ def get_forecast_view():
     return render_template('index.html', error=error)
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=8000)
+    serve(app, host="0.0.0.0", port=8000)
