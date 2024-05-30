@@ -109,48 +109,9 @@ def plot_temperature_trends(weather_df):
     plt.close()
     return img_base64
 
-"""def show_weather_details(weather_df):
-    weather_df['Day/Night'] = weather_df['Day Time'].apply(lambda x: 'Day' if x else 'Night')
-    weather_df['Date'] = pd.to_datetime(weather_df['Date']).dt.strftime('%m/%d/%Y')
-
-    fig = go.Figure(data=[go.Table(
-        header=dict(values=list(weather_df[['Date', 'Day/Night', 'Short Forecast', 'Detailed Forecast']].columns),
-                    fill_color='paleturquoise',
-                    align='left'),
-        cells=dict(values=[weather_df['Date'], weather_df['Day/Night'], weather_df['Short Forecast'], weather_df['Detailed Forecast']],
-                fill_color='lightblue',
-                align='left'))
-    ])
-    fig.update_layout(title='Weather Forecast', title_x=0.5)
-    fig.show()"""
-
 def show_weather_details_table(weather_df):
     weather_df['Day/Night'] = weather_df['Day Time'].apply(lambda x: 'Day' if x else 'Night')
     weather_df['Date'] = pd.to_datetime(weather_df['Date']).dt.strftime('%m/%d/%Y')
 
     display_df = weather_df[['Date', 'Day/Night', 'Short Forecast', 'Detailed Forecast']]
     return display_df.to_html(classes='table table-striped', index=False)
-
-def main():
-    try:
-        lat, lon = get_coord(zip_code)
-        forecast_url = get_baseline(lat, lon)
-        
-        if forecast_url:
-            weather_df = get_forecast(forecast_url)
-            
-            if not weather_df.empty:
-                plot_temperature_trends(weather_df)
-                #show_weather_details(weather_df)
-                show_weather_details_table(weather_df)
-            else:
-                print("No forecast data available.")
-        else:
-            print("Unable to retrieve the forecast URL.")
-    except ValueError as e:
-        print(f"Error: {e}")
-
-if __name__ == '__main__':
-    print('\n Get Current Weather Forecast For Your Area')
-    zip_code = input("\n Enter your Zip Code (XXXXX): ")
-    main()
