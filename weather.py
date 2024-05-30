@@ -65,6 +65,8 @@ def get_forecast(forecast_url):
             'Short Forecast': short_forecasts,
             'Detailed Forecast': detailed_forecasts
         })
+        weather_df['Date'] = pd.to_datetime(weather_df['Date'])
+        weather_df = weather_df.sort_values(by='Date')
         return weather_df
     else:
         print(f"Error: Unable to fetch data, status code {forecast_response.status_code}")
@@ -72,7 +74,8 @@ def get_forecast(forecast_url):
 def plot_temperature_trends(weather_df):
     daytime_temps = weather_df[weather_df['Day Time'] == True]
     nighttime_temps = weather_df[weather_df['Day Time'] == False]
-    weather_df['Date'] = pd.to_datetime(weather_df['Date'])
+    #weather_df['Date'] = pd.to_datetime(weather_df['Date'])
+    #weather_df = weather_df.sort_values(by='Date')
     plt.figure(figsize=(10, 6))
     plt.plot(daytime_temps['Date'], daytime_temps['Temp'], label='Highs (Daytime)', color='orange', marker='o')
     for i in range(len(daytime_temps)):
@@ -95,9 +98,10 @@ def plot_temperature_trends(weather_df):
     plt.ylabel('Temperature (F)')
     plt.legend()
     plt.xticks()
-    plt.grid(True)
+    plt.grid(False)
     plt.tight_layout()
     plt.tight_layout()
+    #plt.show()
     buf = BytesIO()
     plt.savefig(buf, format='png')
     buf.seek(0)
@@ -125,7 +129,7 @@ def show_weather_details_table(weather_df):
     weather_df['Date'] = pd.to_datetime(weather_df['Date']).dt.strftime('%m/%d/%Y')
 
     display_df = weather_df[['Date', 'Day/Night', 'Short Forecast', 'Detailed Forecast']]
-    pprint(display_df)
+    return display_df.to_html(classes='table table-striped', index=False)
 
 def main():
     try:
