@@ -22,7 +22,6 @@ def get_baseline(lat, lon):
             response_json = response.json()
             forecast_url = response_json['properties']['forecast']
         else:
-            # Print an error message if the request was not successful
             print(f"Error: Unable to fetch data, status code {response.status_code}")
         return forecast_url
     except ValueError as e:
