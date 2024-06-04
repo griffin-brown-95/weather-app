@@ -1,10 +1,7 @@
 import requests
 import pandas as pd
 import pgeocode
-import json
 import matplotlib.pyplot as plt
-from io import BytesIO
-import base64
 import streamlit as st
 
 
@@ -71,44 +68,6 @@ def get_forecast(forecast_url):
 def plot_temperature_trends(weather_df):
     daytime_temps = weather_df[weather_df['Day Time'] == True]
     nighttime_temps = weather_df[weather_df['Day Time'] == False]
-    #weather_df['Date'] = pd.to_datetime(weather_df['Date'])
-    #weather_df = weather_df.sort_values(by='Date')
-    plt.figure(figsize=(10, 6))
-    plt.plot(daytime_temps['Date'], daytime_temps['Temp'], label='Highs (Daytime)', color='orange', marker='o')
-    for i in range(len(daytime_temps)):
-        plt.annotate(f"{daytime_temps.iloc[i]['Temp']}°F", 
-                    (daytime_temps.iloc[i]['Date'], daytime_temps.iloc[i]['Temp']), 
-                    textcoords="offset points", 
-                    xytext=(0, 10), 
-                    ha='center', 
-                    fontsize=9)
-    plt.plot(nighttime_temps['Date'], nighttime_temps['Temp'], label='Lows (Nighttime)', color='blue', marker='o')
-    for i in range(len(nighttime_temps)):
-        plt.annotate(f"{nighttime_temps.iloc[i]['Temp']}°F", 
-                    (nighttime_temps.iloc[i]['Date'], nighttime_temps.iloc[i]['Temp']), 
-                    textcoords="offset points", 
-                    xytext=(0, -15), 
-                    ha='center', 
-                    fontsize=9)
-    plt.title('Temperature Trends')
-    plt.xlabel('Date')
-    plt.ylabel('Temperature (F)')
-    plt.legend()
-    plt.xticks()
-    plt.grid(False)
-    plt.tight_layout()
-    plt.tight_layout()
-    #plt.show()
-    buf = BytesIO()
-    plt.savefig(buf, format='png')
-    buf.seek(0)
-    img_base64 = base64.b64encode(buf.getvalue()).decode('utf-8')
-    plt.close()
-    return img_base64
-
-def plot_streamlit(weather_df):
-    daytime_temps = weather_df[weather_df['Day Time'] == True]
-    nighttime_temps = weather_df[weather_df['Day Time'] == False]
     
     plt.figure(figsize=(10, 6))
     plt.plot(daytime_temps['Date'], daytime_temps['Temp'], label='Highs (Daytime)', color='orange', marker='o')
@@ -139,13 +98,6 @@ def plot_streamlit(weather_df):
     plt.close()
 
 def show_weather_details_table(weather_df):
-    weather_df['Day/Night'] = weather_df['Day Time'].apply(lambda x: 'Day' if x else 'Night')
-    weather_df['Date'] = pd.to_datetime(weather_df['Date']).dt.strftime('%m/%d/%Y')
-
-    display_df = weather_df[['Date', 'Day/Night', 'Short Forecast', 'Detailed Forecast']]
-    return display_df.to_html(classes='table table-striped', index=False)
-
-def show_weather_details_table_st(weather_df):
     weather_df['Day/Night'] = weather_df['Day Time'].apply(lambda x: 'Day' if x else 'Night')
     weather_df['Date'] = pd.to_datetime(weather_df['Date']).dt.strftime('%m/%d/%Y')
 
