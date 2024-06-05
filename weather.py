@@ -101,4 +101,5 @@ def show_weather_details_table(weather_df):
     weather_df['Date'] = pd.to_datetime(weather_df['Date']).dt.strftime('%m/%d/%Y')
 
     display_df = weather_df[['Date', 'Day/Night', 'Short Forecast', 'Detailed Forecast']]
+    display_df.set_index('Date', inplace=True)
     return display_df
